@@ -5,6 +5,7 @@ This project is part of a QA Automation Take-Home Challenge for Booking.com usin
 - Dynamic data handling (e.g., check-in dates)
 - Modular architecture for locators and configs
 - Automated HTML reporting with Mochawesome
+- CI/CD pipeline support via Jenkins
 
 ---
 
@@ -55,6 +56,7 @@ cypress/
 ├── screenshots/              # Saved screenshots on failure
 ├── downloads/                # Downloaded files (optional)
 mochawesome-report/           # Generated HTML reports
+Jenkinsfile                   # CI pipeline configuration
 ```
 
 ---
@@ -135,6 +137,23 @@ npx mochawesome-report-generator mochawesome.json
 
 You’ll find the HTML report in:  
 `mochawesome-report/mochawesome.html`
+
+---
+
+## 🔁 Continuous Integration with Jenkins
+
+This project includes a `Jenkinsfile` for automated CI builds and test execution.
+
+### Sample pipeline steps:
+- Install dependencies via `npm`
+- Run Cypress test suite with Mochawesome
+- Merge and generate HTML reports
+- Archive the report as a Jenkins artifact
+
+To run it:
+1. Set up a Jenkins job (e.g., multibranch pipeline)
+2. Ensure you have NodeJS and Chrome available on the agent
+3. Jenkins will detect and run the `Jenkinsfile` on each commit
 
 ---
 
