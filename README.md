@@ -1,90 +1,151 @@
-# Fuse Framework
+# Fuse QA Automation Challenge – Cypress Framework
 
-**Fuse** is a lightweight and scalable framework designed to [insert purpose here, e.g., streamline web automation, testing, or backend services]. It provides a modular architecture and clean design, making it easy to build, maintain, and extend.
+This project is part of a QA Automation Take-Home Challenge for Booking.com using **Cypress**. It includes:
+- AI-powered test case design
+- Dynamic data handling (e.g., check-in dates)
+- Modular architecture for locators and configs
+- Automated HTML reporting with Mochawesome
 
-## 🚀 Features
-
-- ⚙️ **Modular Structure** – Organize your code in reusable modules
-- 🔍 **Scalable Architecture** – Designed for projects of any size
-- 💡 **Developer-Friendly** – Clear setup and sensible defaults
-- 🧪 **Test-Ready** – Integrates easily with modern testing tools
+---
 
 ## 📦 Installation
 
 1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/MiguelCamarena/Fuse.git
-   ```
+```bash
+git clone https://github.com/MiguelCamarena/Fuse.git
+cd Fuse
+```
 
-2. Navigate into the project folder:
+2. Install the dependencies:
 
-   ```bash
-   cd Fuse
-   ```
+```bash
+npm install
+```
 
-3. Install dependencies:
+3. Launch the Cypress Test Runner (GUI mode):
 
-   ```bash
-   npm install
-   ```
+```bash
+npx cypress open
+```
 
-## 🛠 Usage
+4. Or run tests in headless mode:
 
-> Here's a basic example of how to get started with Fuse:
+```bash
+npx cypress run
+```
+
+---
+
+## 🧪 Test Structure
+
+```bash
+cypress/
+├── e2e/                      # Test specs by user story
+│   ├── flight-booking.cy.js
+│   ├── hotel-details.cy.js
+│   └── hotel-search.cy.js
+├── fixtures/                 # Test data (JSON)
+│   └── searchData.json
+├── support/                  # Helpers, commands & locators
+│   ├── commands.js
+│   ├── locators.js
+│   ├── urlHelper.js
+│   └── e2e.js
+├── screenshots/              # Saved screenshots on failure
+├── downloads/                # Downloaded files (optional)
+mochawesome-report/           # Generated HTML reports
+```
+
+---
+
+## ⚙️ Config Setup
+
+Your base settings are located in `cypress.config.js`. Example:
 
 ```js
-const Fuse = require('fuse-framework');
-
-const app = new Fuse();
-
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
-});
-
-app.listen(3000, () => {
-  console.log('App is running on port 3000');
+module.exports = defineConfig({
+  e2e: {
+    baseUrl: 'https://www.booking.com',
+    env: {
+      language: 'en-us',
+      searchCity: 'New York',
+      routes: {
+        home: '/',
+        searchResults: '/searchresults.html',
+        flights: '/flights'
+      }
+    }
+  }
 });
 ```
 
-> [Replace with actual usage if it’s a CLI tool, test runner, or framework extension]
+---
 
-## 🧪 Testing
+## 📂 Modular Locators & URL Helper
 
-This framework is designed with testing in mind. You can integrate it with tools like:
-- Cypress
-- Jest
-- Mocha / Chai
-- Playwright
+### 🔍 Locators
 
-Add your tests inside the `/tests` directory and run:
+Defined in `cypress/support/locators.js` for reusability and maintainability.
+
+```js
+export const homePageLocators = {
+  searchInput: 'input[name="ss"]',
+  submitButton: 'button[type="submit"]',
+  propertyCard: '[data-testid="property-card"]',
+};
+```
+
+### 🌐 URL Helper
+
+Builds clean URLs using the config and params.
+
+```js
+export const getUrl = (routeKey = 'home', options = {}) => {
+  const base = Cypress.config('baseUrl');
+  const lang = Cypress.env('language');
+  const routes = Cypress.env('routes') || {};
+  const path = routes[routeKey] || '/';
+  const params = new URLSearchParams({ lang, ...options }).toString();
+  return `${base}${path}?${params}`;
+};
+```
+
+---
+
+## 📊 Generate Mochawesome Report
+
+### 1. Run tests with report output:
 
 ```bash
-npm test
+npx cypress run --reporter mochawesome --reporter-options "reportDir=mochawesome-report,overwrite=false,html=false,json=true"
 ```
 
-## 📂 Project Structure
+### 2. Merge JSON results:
 
 ```bash
-Fuse/
-├── src/              # Core framework logic
-├── tests/            # Automated test cases
-├── examples/         # Example usage files
-├── README.md
-└── package.json
+npx mochawesome-merge mochawesome-report/*.json > mochawesome.json
 ```
 
-## 🤝 Contributing
+### 3. Generate final HTML report:
 
-Contributions are welcome! Here’s how to get started:
+```bash
+npx mochawesome-report-generator mochawesome.json
+```
 
-1. Fork the repo
-2. Create a new branch (`git checkout -b feature/your-feature`)
-3. Make your changes
-4. Commit your changes (`git commit -m 'Add some feature'`)
-5. Push to the branch (`git push origin feature/your-feature`)
-6. Open a Pull Request
+You’ll find the HTML report in:  
+`mochawesome-report/mochawesome.html`
+
+---
+
+## ✅ AI Integration Highlights
+
+- 🤖 **Test Case Generation**: Created and refined via ChatGPT (edge cases, dynamic inputs, locator strategy)
+- 🧠 **Self-Healing Locators**: Resilient selectors using `data-testid`, semantic roles, or visible text
+- 📈 **AI-assisted Reporting**: Review and improvements based on log analysis and test insights
+
+---
 
 ## 📄 License
 
-This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
